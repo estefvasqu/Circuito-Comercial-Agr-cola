@@ -1,0 +1,145 @@
+table Balances_Cultivos
+	lineageTag: 4cc52103-3dc5-4784-aca3-c9c52a2af2eb
+
+	column id
+		dataType: string
+		lineageTag: 9efdf8a9-08ac-4974-9e08-b5fbf0fba191
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Column2
+		dataType: string
+		lineageTag: c989c5c2-2735-4472-9033-eaadf3704bc6
+		summarizeBy: none
+		sourceColumn: Column2
+
+		annotation SummarizationSetBy = Automatic
+
+	column num
+		dataType: int64
+		formatString: 0
+		lineageTag: cfe08cc4-723a-4da0-980d-efe1173c6696
+		summarizeBy: sum
+		sourceColumn: num
+
+		annotation SummarizationSetBy = Automatic
+
+	column i
+		dataType: string
+		lineageTag: 9505c9cd-15b4-41e0-99b2-ee96c77f37be
+		summarizeBy: none
+		sourceColumn: i
+
+		annotation SummarizationSetBy = Automatic
+
+	column Producto
+		dataType: string
+		lineageTag: 00f5b62f-7514-4d73-97f0-aaa27a0d56d5
+		summarizeBy: none
+		sourceColumn: Producto
+
+		annotation SummarizationSetBy = Automatic
+
+	column att
+		dataType: string
+		lineageTag: 2e572b81-aa68-4f8e-8ecc-fd077b10a742
+		summarizeBy: none
+		sourceColumn: att
+
+		annotation SummarizationSetBy = Automatic
+
+	column f
+		dataType: string
+		lineageTag: 558cff52-e736-47f3-b067-b1b64b4bfff6
+		summarizeBy: none
+		sourceColumn: f
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año
+		dataType: int64
+		formatString: 0
+		lineageTag: 95718bfb-98c7-4f93-b7d3-df8e80d05a60
+		summarizeBy: sum
+		sourceColumn: Año
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor
+		dataType: double
+		lineageTag: 4b36781b-1185-489a-b618-2a1a72bac7d3
+		summarizeBy: sum
+		sourceColumn: Valor
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Campaña
+		dataType: string
+		lineageTag: cf51427a-7882-47db-bd11-f99f4cd29c80
+		summarizeBy: none
+		sourceColumn: Campaña
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Balances_Cultivos = m
+		mode: import
+		queryGroup: Tablas
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\evasquez\OneDrive - Bolsa de Cereales de Buenos Aires\Documentos - Instituto Estudios Económicos\Balances\Balance Comercial.xlsx"), null, true),
+				    Balances_Cultivos_Sheet = Origen{[Item="Balances_Cultivos",Kind="Sheet"]}[Data],
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Balances_Cultivos_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Column1", type text}, {"Balances Argentina - Bolsa de Cereales", type text}, {"Column3", type any}, {"Column4", type text}, {"Column5", type text}, {"Column6", type text}, {"Column7", type any}, {"Column8", type any}, {"Column9", type any}, {"Column10", type any}, {"Column11", type any}, {"Column12", type any}, {"Column13", type any}, {"Column14", type any}, {"Column15", type any}, {"Column16", type any}, {"Column17", type any}, {"Column18", type any}, {"Column19", type any}, {"Column20", type any}, {"Column21", type any}, {"Column22", type any}, {"Column23", type any}, {"Column24", type any}, {"Column25", type any}, {"Column26", type any}, {"Column27", type any}, {"Column28", type any}, {"Column29", type any}, {"Column30", type any}, {"Column31", type any}, {"Column32", type any}, {"Column33", type any}, {"Column34", type any}, {"Column35", type any}, {"Column36", type any}, {"Column37", type any}, {"Column38", type any}, {"Column39", type any}, {"Column40", type any}, {"Column41", type any}, {"Column42", type any}, {"Column43", type any}, {"Column44", type any}, {"Column45", type any}, {"Column46", type any}, {"Column47", type any}, {"Column48", type any}, {"Column49", type any}, {"Column50", type any}, {"Column51", type any}, {"Column52", type any}, {"Column53", type any}, {"Column54", type any}, {"Column55", type any}, {"Column56", type any}, {"Column57", type any}, {"Column58", type any}, {"Column59", type any}, {"Column60", type any}, {"Column61", type any}, {"Column62", type any}, {"Column63", type any}, {"Column64", type any}, {"Column65", type any}, {"Column66", type any}, {"Column67", type any}}),
+				    #"Filas superiores quitadas" = Table.Skip(#"Tipo cambiado",1),
+				    #"Encabezados promovidos1" = Table.PromoteHeaders(#"Filas superiores quitadas", [PromoteAllScalars=true]),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Encabezados promovidos1",{{"id", type text}, {"Column2", type text}, {"num", Int64.Type}, {"i", type text}, {"att", type text}, {"f", type text}, {"2000", type any}, {"2001", type any}, {"2002", type any}, {"2003", type any}, {"2004", type any}, {"2005", type any}, {"2006", type any}, {"2007", type any}, {"2008", type any}, {"2009", type any}, {"2010", type any}, {"2011", type any}, {"2012", type any}, {"2013", type any}, {"2014", type any}, {"2015", type any}, {"2016", type any}, {"2017", type any}, {"2018", type any}, {"2019", type any}, {"2020", type any}, {"2021", type any}, {"2022", type any}, {"2023", type any}, {"2024", type any}, {"2025", type number}, {"Column33", type any}, {"Column34", type any}, {"Column35", type any}, {"Column36", type any}, {"Column37", type any}, {"Column38", type any}, {"Column39", type any}, {"Column40", type any}, {"Column41", type any}, {"Column42", type any}, {"Column43", type any}, {"Column44", type any}, {"Column45", type any}, {"Column46", type any}, {"Column47", type any}, {"Column48", type any}, {"Column49", type any}, {"Column50", type any}, {"Column51", type any}, {"Column52", type any}, {"Column53", type any}, {"Column54", type any}, {"Column55", type any}, {"Column56", type any}, {"Column57", type any}, {"Column58", type any}, {"Column59", type any}, {"Column60", type any}, {"Column61", type any}, {"Column62", type any}, {"Column63", type any}, {"Column64", type any}, {"Column65", type any}, {"Column66", type any}, {"Column67", type any}}),
+				    #"Personalizada agregada" = Table.AddColumn(#"Tipo cambiado1", "Personalizado", each if [i] = "bar" then "Cebada Total" else
+				if [i] = "bio" then null else
+				if [i] = "crn" then "Maíz" else
+				if [i] = "nbm" then "Harina de Girasol" else
+				if [i] = "nbo" then "Aceite de Girasol" else
+				if [i] = "nbs" then "Girasol" else
+				if [i] = "sbm" then "Harina de Soja" else
+				if [i] = "sbo" then "Aceite de Soja" else
+				if [i] = "sbs" then "Soja" else
+				if [i] = "sor" then "Sorgo" else
+				if [i] = "whe" then "Trigo" else null),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Personalizada agregada",{"id", "Column2", "num", "i", "Personalizado",
+				"att", "f", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "Column33", "Column34", "Column35", "Column36", "Column37", "Column38", "Column39", "Column40", "Column41", "Column42", "Column43", "Column44", "Column45", "Column46", "Column47", "Column48", "Column49", "Column50", "Column51", "Column52", "Column53", "Column54", "Column55", "Column56", "Column57", "Column58", "Column59", "Column60", "Column61", "Column62", "Column63", "Column64", "Column65", "Column66", "Column67"}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas reordenadas",{{"Personalizado", "Producto"}}),
+				    #"Columna de anulación de dinamización" = Table.UnpivotOtherColumns(#"Columnas con nombre cambiado", {"id", "Column2", "num", "i", "Producto", "att", "f"}, "Atributo", "Valor"),
+				    #"Filas filtradas" = Table.SelectRows(#"Columna de anulación de dinamización", each ([Atributo] = "2000" or [Atributo] = "2001" or [Atributo] = "2002" or [Atributo] = "2003" or [Atributo] = "2004" or [Atributo] = "2005" or [Atributo] = "2006" or [Atributo] = "2007" or [Atributo] = "2008" or [Atributo] = "2009" or [Atributo] = "2010" or [Atributo] = "2011" or [Atributo] = "2012" or [Atributo] = "2013" or [Atributo] = "2014" or [Atributo] = "2015" or [Atributo] = "2016" or [Atributo] = "2017" or [Atributo] = "2018" or [Atributo] = "2019" or [Atributo] = "2020" or [Atributo] = "2021" or [Atributo] = "2022" or [Atributo] = "2023" or [Atributo] = "2024" or [Atributo] = "2025")),
+				    #"Columnas con nombre cambiado1" = Table.RenameColumns(#"Filas filtradas",{{"Atributo", "Año"}}),
+				    #"Tipo cambiado2" = Table.TransformColumnTypes(#"Columnas con nombre cambiado1",{{"Año", Int64.Type}}),
+				    #"Personalizada agregada1" = Table.AddColumn(#"Tipo cambiado2", "Campaña", each if [Año] = 2007 then "2007/08" else
+				if [Año] = 2008 then "2008/09" else
+				if [Año] = 2009 then "2009/10" else
+				if [Año] = 2010 then "2010/11" else
+				if [Año] = 2011 then "2011/12" else
+				if [Año] = 2012 then "2012/13" else
+				if [Año] = 2013 then "2013/14" else
+				if [Año] = 2014 then "2014/15" else
+				if [Año] = 2015 then "2015/16" else
+				if [Año] = 2016 then "2016/17" else
+				if [Año] = 2017 then "2017/18" else
+				if [Año] = 2018 then "2018/19" else
+				if [Año] = 2019 then "2019/20" else
+				if [Año] = 2020 then "2020/21" else
+				if [Año] = 2021 then "2021/22" else
+				if [Año] = 2022 then "2022/23" else
+				if [Año] = 2023 then "2023/24" else
+				if [Año] = 2024 then "2024/25" else
+				if [Año] = 2025 then "2025/26" else null),
+				    #"Filas filtradas1" = Table.SelectRows(#"Personalizada agregada1", each ([Campaña] <> null) and ([Valor] <> "👍" and [Valor] <> "👎")),
+				    #"Tipo cambiado3" = Table.TransformColumnTypes(#"Filas filtradas1",{{"Valor", type number}})
+				in
+				    #"Tipo cambiado3"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

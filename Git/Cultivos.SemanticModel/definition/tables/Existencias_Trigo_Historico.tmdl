@@ -1,0 +1,85 @@
+table Existencias_Trigo_Historico
+	lineageTag: bd4956ee-abb1-40b0-b76e-eb1fdb4ff3bc
+
+	column Fecha
+		formatString: General Date
+		lineageTag: a860f73d-c330-4c54-b579-3782c001ff3d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fecha]
+
+		variation Variación
+			isDefault
+			relationship: 7fa7abe5-96be-4c8e-b1d2-e7f76e615f95
+			defaultHierarchy: LocalDateTable_72fab1cc-dea3-40f8-9bb4-e2f2a7ab1f61.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		formatString: 0
+		lineageTag: 7b199eb2-86f8-4c22-992a-627922afc4ec
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año
+		formatString: 0
+		lineageTag: 23e638b1-3069-4bea-af9d-2eee23926151
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mtn
+		lineageTag: 36057e28-07d9-4003-8177-479a68f97acf
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Mtn]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column id_campaña
+		formatString: 0
+		lineageTag: 5ca633ca-caf7-4f97-b9b7-5a22fe5b8e4e
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [id_campaña]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Existencias_Trigo_Historico = calculated
+		mode: import
+		source =
+				
+				VAR UltimaFecha =
+				    CALCULATE(
+				        MAX(Existencias[Fecha]),
+				        FILTER(Existencias, Existencias[Producto] = "Trigo Pan")
+				    )
+				VAR UltimoMes = MONTH(UltimaFecha)
+				VAR UltimoAnio = YEAR(UltimaFecha)
+				VAR CampanaBase = 15
+				
+				RETURN
+				ADDCOLUMNS(
+				    SELECTCOLUMNS(
+				        FILTER(
+				            Existencias,
+				            Existencias[Producto] = "Trigo Pan" &&
+				            MONTH(Existencias[Fecha]) = UltimoMes
+				        ),
+				        "Fecha", Existencias[Fecha],
+				        "Mes", Existencias[Mes],
+				        "Año", Existencias[Año],
+				        "Mtn", Existencias[Mtn]
+				    ),
+				    "id_campaña", CampanaBase - (UltimoAnio - [Año])
+				)
+
+	annotation PBI_Id = a0677147e4944613abfc4a74a573027b
+

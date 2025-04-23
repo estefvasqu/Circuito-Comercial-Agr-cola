@@ -1,0 +1,36 @@
+table Referencia
+	lineageTag: 9a2bc7fe-c850-481a-99ae-ca08309e14b3
+
+	column id_referencia
+		dataType: int64
+		formatString: 0
+		lineageTag: 78e57edd-4f60-47ac-9c09-e4e7aeaa2add
+		summarizeBy: none
+		sourceColumn: id_referencia
+
+		annotation SummarizationSetBy = Automatic
+
+	column Referencia
+		dataType: string
+		lineageTag: 05018ec4-3127-4f7f-891f-3acc4e47f488
+		summarizeBy: none
+		sourceColumn: Referencia
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Referencia = m
+		mode: import
+		queryGroup: Dimensiones
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\evasquez\OneDrive - Bolsa de Cereales de Buenos Aires\Documentos - Instituto Estudios Económicos\Dashboards\Monitor Economico\Outputs\Tablas_Dimensiones.xlsx"), null, true),
+				    Referencia_Sheet = Origen{[Item="Referencia",Kind="Sheet"]}[Data],
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Referencia_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"id_referencia", Int64.Type}})
+				in
+				    #"Tipo cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

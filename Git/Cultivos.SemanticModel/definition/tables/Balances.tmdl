@@ -1,0 +1,119 @@
+table Balances
+	lineageTag: fda04dfa-c2e7-4233-bb23-ed2ebf4e365e
+
+	column Producto
+		dataType: string
+		lineageTag: 97f87c51-6a10-4672-921c-7276cbf5b098
+		summarizeBy: none
+		sourceColumn: Producto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Atributo
+		dataType: string
+		lineageTag: f2d33487-1a01-4723-82ab-40880a4331b5
+		summarizeBy: none
+		sourceColumn: Atributo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fuente
+		dataType: string
+		lineageTag: cce5a684-e69a-4b28-ad94-ff4140cefc36
+		summarizeBy: none
+		sourceColumn: Fuente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Campaña
+		dataType: string
+		lineageTag: 08456235-2733-4774-90c3-f108f1701d56
+		summarizeBy: none
+		sourceColumn: Campaña
+
+		annotation SummarizationSetBy = Automatic
+
+	column Meses
+		dataType: string
+		lineageTag: c76eeffc-5eed-4e66-9a25-65e8d2733c20
+		summarizeBy: none
+		sourceColumn: Meses
+
+		annotation SummarizationSetBy = Automatic
+
+	column Referencia
+		dataType: string
+		lineageTag: ececa4b7-c6db-4ea3-b2dc-435f9ac36cb5
+		summarizeBy: none
+		sourceColumn: Referencia
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor
+		dataType: double
+		formatString: #,0
+		lineageTag: 944f21a0-d2bd-4c1d-a127-229572308366
+		summarizeBy: sum
+		sourceColumn: Valor
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	column Unit
+		dataType: string
+		lineageTag: 2749b16b-bbd7-4183-8151-a887e451bacc
+		summarizeBy: none
+		sourceColumn: Unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column id
+		dataType: string
+		lineageTag: 5bdde775-80db-4ffa-acc0-d52cdf62244d
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Orden Comercial' = ```
+			
+			SWITCH(
+			    'Balances'[id],
+			    "a", 1,  
+			    "b", 2,  
+			    "c", 3,  
+			    "d", 4,  
+			    "e", 5,  
+			    "f", 6,  
+			    "g", 7,  
+			    "h", 8,  
+			    "i", 9,  
+			    "j", 10, 
+			    "k", 11, 
+			    "l", 12,
+			    BLANK()
+			)
+			```
+		formatString: 0
+		lineageTag: b2c35904-4bc7-4619-ae1e-21a269d2105c
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Balances = m
+		mode: import
+		queryGroup: Tablas
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\evasquez\OneDrive - Bolsa de Cereales de Buenos Aires\Documentos - Instituto Estudios Económicos\Dashboards\Monitor Economico\Outputs\datos_Balances.xlsx"), null, true),
+				    Sheet1_Sheet = Origen{[Item="Sheet1",Kind="Sheet"]}[Data],
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"Producto", type text}, {"Atributo", type text}, {"Fuente", type text}, {"Campaña", type text}, {"Meses", type text}, {"Referencia", type text}, {"Valor", type number}, {"Unit", type text}, {"id", type text}})
+				in
+				    #"Tipo cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,366 @@
+table Medidas_Soja
+	lineageTag: 8121a5bc-d65c-4354-b7fa-7cfea47af0d3
+
+	measure 'Producción Est23/24 (Mtn)' = ```
+			
+			VAR CampanaFiltrada =
+			    CALCULATE(
+			        MAX('Campaña'[Campaña]),
+			        'Campaña'[id_campaña] = 14
+			    )
+			
+			VAR ValorCalculado =
+			    CALCULATE(
+			        SUM(Balances_Cultivos[Valor]),
+			        Balances_Cultivos[att] = "prd",
+			        Balances_Cultivos[Campaña] = CampanaFiltrada
+			    )
+			
+			RETURN
+			DIVIDE(ValorCalculado, 1000000)
+			
+			```
+		lineageTag: 3df448ff-5016-4a77-a132-31bdc0b7d16a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Molienda Acumulada(Mtn)' =
+			
+			VAR OrdenActual = MAX('Balances'[Orden Comercial])
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]) / 1000000,
+			    'Balances'[Campaña] = "2023/24",
+			    'Balances'[Atributo] = "Molienda",
+			    'Balances'[Referencia] = "total",
+			    'Balances'[Meses] <> "Total",
+			    'Balances'[Orden Comercial] <= OrdenActual
+			)
+		lineageTag: 5ed4057d-510b-4a77-843e-3b37c6d42d25
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Exportación Acumulada(Mtn)' =
+			
+			VAR OrdenActual = MAX('Balances'[Orden Comercial])
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]) / 1000000,
+			    'Balances'[Campaña] = "2023/24",
+			    'Balances'[Atributo] = "Exportaciones",
+			    'Balances'[Fuente] = "Indec",
+			    'Balances'[Referencia] = "total",
+			    'Balances'[Meses] <> "Total",
+			    'Balances'[Orden Comercial] <= OrdenActual
+			)
+		lineageTag: f67baab7-901b-4472-9433-3e63f8eda500
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Stock Inicial Soja por Campaña (Mtn)_Circuito' =
+			
+			CALCULATE(
+			    SUM(Tabla_Stock_Cultivos[Stock Inicial (Mtn)]),
+			    Tabla_Stock_Cultivos[Producto] = "Soja"
+			)
+		lineageTag: 53941733-6b03-4bbf-9127-3b88aa0d90e3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Molienda_Acumulada_Soja_Circuito =
+			
+			VAR OrdenLimite =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        FILTER(
+			            ALL('Balances'),
+			            RELATED('Campaña'[id_campaña]) = 14 &&
+			            'Balances'[Producto] = "Soja" &&
+			            'Balances'[Atributo] = "Molienda" &&
+			            'Balances'[Fuente] = "Min Agro" &&
+			            'Balances'[Referencia] = "total" &&
+			            NOT ISBLANK('Balances'[Valor]) &&
+			            NOT ISBLANK('Balances'[Orden Comercial])
+			        )
+			    )
+			
+			VAR CampanaActual = SELECTEDVALUE('Campaña'[id_campaña])
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]) / 1000000,
+			    FILTER(
+			        ALL('Balances'),
+			        RELATED('Campaña'[id_campaña]) = CampanaActual &&
+			        'Balances'[Producto] = "Soja" &&
+			        'Balances'[Atributo] = "Molienda" &&
+			        'Balances'[Fuente] = "Min Agro" &&
+			        'Balances'[Referencia] = "total" &&
+			        NOT ISBLANK('Balances'[Valor]) &&
+			        NOT ISBLANK('Balances'[Orden Comercial]) &&
+			        'Balances'[Orden Comercial] <= OrdenLimite
+			    )
+			)
+		lineageTag: 865c4fcf-de79-4257-acbc-f57fc3d7f59a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ExistenciasAct_Soja_Circuito =
+			
+			SUM(Existencias_Soja_Historico[Mtn])
+		lineageTag: e4e16c2e-066d-4fb0-8ecc-1c71bff47457
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Exportaciones_Acum_Soja_Circuito =
+			
+			VAR OrdenLimite =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        FILTER(
+			            ALL('Balances'),
+			            RELATED('Campaña'[id_campaña]) = 14 &&
+			            'Balances'[Producto] = "Soja" &&
+			            'Balances'[Atributo] = "Exportaciones" &&
+			            'Balances'[Fuente] = "Indec" &&
+			            'Balances'[Referencia] = "total" &&
+			            'Balances'[Meses] <> "Total" &&
+			            NOT ISBLANK('Balances'[Valor]) &&
+			            NOT ISBLANK('Balances'[Orden Comercial])
+			        )
+			    )
+			
+			VAR CampanaActual = SELECTEDVALUE('Campaña'[id_campaña])
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]) / 1000000,
+			    FILTER(
+			        ALL('Balances'),
+			        RELATED('Campaña'[id_campaña]) = CampanaActual &&
+			        'Balances'[Producto] = "Soja" &&
+			        'Balances'[Atributo] = "Exportaciones" &&
+			        'Balances'[Fuente] = "Indec" &&
+			        'Balances'[Referencia] = "total" &&
+			        'Balances'[Meses] <> "Total" &&
+			        NOT ISBLANK('Balances'[Valor]) &&
+			        NOT ISBLANK('Balances'[Orden Comercial]) &&
+			        'Balances'[Orden Comercial] <= OrdenLimite
+			    )
+			)
+		lineageTag: 2d919d6a-3002-4a7b-af0c-b5f2174e7421
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Soja_Circuito (Mtn)' = [ExistenciasAct_Soja_Circuito] - [Stock Inicial Soja por Campaña (Mtn)_Circuito] + [Molienda_Acumulada_Soja_Circuito] + [Exportaciones_Acum_Soja_Circuito] - [Importaciones_Acum_Soja_Circuito]
+		lineageTag: eec1d96b-f5b3-47a8-9d52-84adbb566ebe
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Importaciones_Acum_Soja_Circuito =
+			
+			VAR OrdenLimite =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        FILTER(
+			            ALL('Balances'),
+			            RELATED('Campaña'[id_campaña]) = 14 &&
+			            'Balances'[Producto] = "Soja" &&
+			            'Balances'[Atributo] = "Importaciones" &&
+			            'Balances'[Fuente] = "Indec" &&
+			            'Balances'[Referencia] = "total" &&
+			            'Balances'[Meses] <> "Total" &&
+			            NOT ISBLANK('Balances'[Valor]) &&
+			            NOT ISBLANK('Balances'[Orden Comercial])
+			        )
+			    )
+			
+			VAR CampanaActual = SELECTEDVALUE('Campaña'[id_campaña])
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]) / 1000000,
+			    FILTER(
+			        ALL('Balances'),
+			        RELATED('Campaña'[id_campaña]) = CampanaActual &&
+			        'Balances'[Producto] = "Soja" &&
+			        'Balances'[Atributo] = "Importaciones" &&
+			        'Balances'[Fuente] = "Indec" &&
+			        'Balances'[Referencia] = "total" &&
+			        'Balances'[Meses] <> "Total" &&
+			        NOT ISBLANK('Balances'[Valor]) &&
+			        NOT ISBLANK('Balances'[Orden Comercial]) &&
+			        'Balances'[Orden Comercial] <= OrdenLimite
+			    )
+			)
+		lineageTag: fc92bb4c-3aa9-406c-8c81-81def84e8744
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure '% En Flujo Com.' = ```
+			
+			DIVIDE(
+			    [Soja_Circuito (Mtn)],
+			    [Producción (Mtn)],
+			    BLANK()
+			)
+			
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: d87cdbf9-3630-4750-8199-adfde596f64e
+
+	measure Promedio_Soja =
+			
+			VAR CircuitoActual =
+			    CALCULATE(
+			        [ExistenciasAct_Soja_Circuito]
+			        - [Stock Inicial Soja por Campaña (Mtn)_Circuito]
+			        + [Molienda_Acumulada_Soja_Circuito]
+			        + [Exportaciones_Acum_Soja_Circuito]
+			        - [Importaciones_Acum_Soja_Circuito],
+			        'Campaña'[id_campaña] = 14
+			    )
+			
+			VAR PromedioCircuitoSobreProduccion =
+			    CALCULATE(
+			        AVERAGEX(
+			            VALUES('Campaña'[id_campaña]),
+			            DIVIDE(
+			                [ExistenciasAct_Soja_Circuito]
+			                - [Stock Inicial Soja por Campaña (Mtn)_Circuito]
+			                + [Molienda_Acumulada_Soja_Circuito]
+			                + [Exportaciones_Acum_Soja_Circuito]
+			                - [Importaciones_Acum_Soja_Circuito],
+			                [Producción (Mtn)],
+			                BLANK()
+			            )
+			        ),
+			        'Campaña'[id_campaña] >= 10 && 'Campaña'[id_campaña] <= 13
+			    )
+			
+			RETURN
+			DIVIDE(CircuitoActual, PromedioCircuitoSobreProduccion, BLANK())
+		formatString: 0.0
+		lineageTag: c8ebeb11-9805-4499-8155-be7278c671d6
+
+	measure Mínimo_Soja =
+			
+			VAR CircuitoActual =
+			    CALCULATE(
+			        [ExistenciasAct_Soja_Circuito]
+			        - [Stock Inicial Soja por Campaña (Mtn)_Circuito]
+			        + [Molienda_Acumulada_Soja_Circuito]
+			        + [Exportaciones_Acum_Soja_Circuito]
+			        - [Importaciones_Acum_Soja_Circuito],
+			        'Campaña'[id_campaña] = 14
+			    )
+			
+			VAR MaxCircuitoSobreProduccion =
+			    CALCULATE(
+			        MAXX(
+			            VALUES('Campaña'[id_campaña]),
+			            DIVIDE(
+			                [ExistenciasAct_Soja_Circuito]
+			                - [Stock Inicial Soja por Campaña (Mtn)_Circuito]
+			                + [Molienda_Acumulada_Soja_Circuito]
+			                + [Exportaciones_Acum_Soja_Circuito]
+			                - [Importaciones_Acum_Soja_Circuito],
+			                [Producción (Mtn)],
+			                BLANK()
+			            )
+			        ),
+			        'Campaña'[id_campaña] >= 10 && 'Campaña'[id_campaña] <= 13
+			    )
+			
+			RETURN
+			DIVIDE(CircuitoActual, MaxCircuitoSobreProduccion, BLANK())
+		formatString: 0.0
+		lineageTag: 10eb72e0-fd86-46d3-adb1-4c25ecb27b0d
+
+	measure Promedio_Soja_Circuito = ```
+			
+			VAR CircuitoActual =
+			    CALCULATE(
+			        [ExistenciasAct_Soja_Circuito]
+			        - [Stock Inicial Soja por Campaña (Mtn)_Circuito]
+			        + [Molienda_Acumulada_Soja_Circuito]
+			        + [Exportaciones_Acum_Soja_Circuito]
+			        - [Importaciones_Acum_Soja_Circuito],
+			        'Campaña'[id_campaña] = 14
+			    )
+			
+			VAR PromedioCircuitoSobreProduccion =
+			    CALCULATE(
+			        AVERAGEX(
+			            VALUES('Campaña'[id_campaña]),
+			            DIVIDE(
+			                [ExistenciasAct_Soja_Circuito]
+			                - [Stock Inicial Soja por Campaña (Mtn)_Circuito]
+			                + [Molienda_Acumulada_Soja_Circuito]
+			                + [Exportaciones_Acum_Soja_Circuito]
+			                - [Importaciones_Acum_Soja_Circuito],
+			                [Producción (Mtn)],
+			                BLANK()
+			            )
+			        ),
+			        'Campaña'[id_campaña] >= 10 && 'Campaña'[id_campaña] <= 13
+			    )
+			
+			RETURN
+			DIVIDE(CircuitoActual, PromedioCircuitoSobreProduccion, BLANK())
+			
+			```
+		lineageTag: 032a771d-6042-4e6f-a220-50666ed35bb6
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Máximo_Soja = ```
+			
+			VAR CircuitoActual =
+			    CALCULATE(
+			        [ExistenciasAct_Soja_Circuito]
+			        - [Stock Inicial Soja por Campaña (Mtn)_Circuito]
+			        + [Molienda_Acumulada_Soja_Circuito]
+			        + [Exportaciones_Acum_Soja_Circuito]
+			        - [Importaciones_Acum_Soja_Circuito],
+			        'Campaña'[id_campaña] = 14
+			    )
+			
+			VAR MinCircuitoSobreProduccion =
+			    CALCULATE(
+			        MINX(
+			            VALUES('Campaña'[id_campaña]),
+			            DIVIDE(
+			                [ExistenciasAct_Soja_Circuito]
+			                - [Stock Inicial Soja por Campaña (Mtn)_Circuito]
+			                + [Molienda_Acumulada_Soja_Circuito]
+			                + [Exportaciones_Acum_Soja_Circuito]
+			                - [Importaciones_Acum_Soja_Circuito],
+			                [Producción (Mtn)],
+			                BLANK()
+			            )
+			        ),
+			        'Campaña'[id_campaña] >= 10 && 'Campaña'[id_campaña] <= 13
+			    )
+			
+			RETURN
+			DIVIDE(CircuitoActual, MinCircuitoSobreProduccion, BLANK())
+			
+			```
+		formatString: 0.0
+		lineageTag: 77ee875a-6036-4170-965d-f62d7c37c3aa
+
+	partition Medidas_Soja = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_ResultType = Table
+

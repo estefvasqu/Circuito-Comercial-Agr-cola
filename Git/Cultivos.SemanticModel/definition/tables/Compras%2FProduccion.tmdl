@@ -1,0 +1,120 @@
+table Compras/Produccion
+	lineageTag: 0a02a7b5-33b2-408b-b7dd-d12d2f09ba9f
+
+	column Fecha
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 95dcc5a8-2ece-4452-8a65-c37ec8c3f325
+		summarizeBy: none
+		sourceColumn: Fecha
+
+		variation Variación
+			isDefault
+			relationship: bac3b5da-4a02-4b36-b39a-4ea81c93229c
+			defaultHierarchy: LocalDateTable_d97ca808-2439-4071-9160-c5c1e9c2488e.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Numero_de_Semana
+		dataType: int64
+		formatString: 0
+		lineageTag: cfcb9132-cbd0-42f6-97a5-18db07ee297b
+		summarizeBy: sum
+		sourceColumn: Numero_de_Semana
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		dataType: int64
+		formatString: 0
+		lineageTag: ea4b91db-3cf7-4e16-bb65-865cc43545be
+		summarizeBy: sum
+		sourceColumn: Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 3079c82f-f1f5-4849-b7e1-463ba0d2b1aa
+		summarizeBy: sum
+		sourceColumn: Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Semana desde el inicio de la comercialización'
+		dataType: int64
+		formatString: 0
+		lineageTag: 310673b8-91c4-4f85-82f0-596198ff6bbc
+		summarizeBy: sum
+		sourceColumn: Semana desde el inicio de la comercialización
+
+		annotation SummarizationSetBy = Automatic
+
+	column Grano
+		dataType: string
+		lineageTag: 182c6b99-8619-43b5-b76b-a77757809867
+		summarizeBy: none
+		sourceColumn: Grano
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sector
+		dataType: string
+		lineageTag: b9219a80-4326-4608-ad4a-cef1b241de4c
+		summarizeBy: none
+		sourceColumn: Sector
+
+		annotation SummarizationSetBy = Automatic
+
+	column Total_Comprado_Porc_Prod
+		dataType: double
+		lineageTag: 975c2091-6fbd-48cb-829c-38326133e50e
+		summarizeBy: sum
+		sourceColumn: Total_Comprado_Porc_Prod
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Campaña
+		dataType: string
+		lineageTag: 494d0241-35d4-4878-856a-9286669dd310
+		summarizeBy: none
+		sourceColumn: Campaña
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Compras/Produccion = m
+		mode: import
+		queryGroup: Tablas
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\evasquez\OneDrive - Bolsa de Cereales de Buenos Aires\Documentos - Instituto Estudios Económicos\Dashboards\Monitor Economico\Outputs\Base_con_Promedios.xlsx"), null, true),
+				    Sheet1_Sheet = Origen{[Item="Sheet1",Kind="Sheet"]}[Data],
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+				    #"Filas filtradas" = Table.SelectRows(#"Encabezados promovidos", each ([Sector] = "Total")),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Filas filtradas",{{"Fecha", type date}, {"Numero_de_Semana", Int64.Type}, {"Mes", Int64.Type}, {"Ano", Int64.Type}, {"Campaña", type text}, {"Total_Comprado", type number}, {"Total_a_Fijar", type number}, {"Total_Fijado", type number}, {"DJVE_Acumuladas", type number}, {"Total_sin_Precio", type number}, {"Total_con_Precio", type number}, {"id", Int64.Type}}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Tipo cambiado",{{"id", "Semana desde el inicio de la comercialización"}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Columnas con nombre cambiado",{"Total_a_Fijar", "Total_Fijado", "DJVE_Acumuladas", "Total_sin_Precio", "Total_con_Precio", "Ano_Campaña", "Ano_Mes"}),
+				    #"Columnas reordenadas" = Table.ReorderColumns(#"Columnas quitadas",{"Fecha", "Numero_de_Semana", "Mes", "Ano", "Campaña", "Semana desde el inicio de la comercialización", "Grano", "Sector", "Total_Comprado", "Producción", "Exportaciones", "Total_Comprado_Porc_Prod", "Total_sin_Precio_Porc_Prod", "Total_con_Precio_Porc_Prod", "DJVE_Acumuladas_Porc_Prod", "Total_Comprado_Porc_Expo", "Total_sin_Precio_Porc_Expo", "Total_con_Precio_Porc_Expo", "DJVE_Acumuladas_Porc_Expo", "Cupo", "id_campaña", "DJVE_Acumuladas_Porc_Cupo", "Prom_Tot_Comprado", "Prom_Tot_Comprado_Porc_Prod"}),
+				    #"Columnas quitadas1" = Table.RemoveColumns(#"Columnas reordenadas",{"Producción", "Exportaciones", "Total_Comprado", "Total_sin_Precio_Porc_Prod", "Total_con_Precio_Porc_Prod", "DJVE_Acumuladas_Porc_Prod", "Total_Comprado_Porc_Expo", "Total_sin_Precio_Porc_Expo", "Total_con_Precio_Porc_Expo", "DJVE_Acumuladas_Porc_Expo", "Cupo", "id_campaña", "DJVE_Acumuladas_Porc_Cupo", "Prom_Tot_Comprado", "Prom_Tot_Comprado_Porc_Prod"}),
+				    #"Personalizada agregada" = Table.AddColumn(#"Columnas quitadas1", "Inicio", each 20),
+				    #"Filas filtradas1" = Table.SelectRows(#"Personalizada agregada", each ([Campaña] <> "Total_Comprado")),
+				    #"Personalizada agregada1" = Table.AddColumn(#"Filas filtradas1", "Campaña 2", each Text.From([Inicio]) & [Campaña]),
+				    #"Columnas quitadas2" = Table.RemoveColumns(#"Personalizada agregada1",{"Inicio"}),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Columnas quitadas2",{{"Campaña 2", type text}}),
+				    #"Valor reemplazado" = Table.ReplaceValue(#"Tipo cambiado1","20Total_Comprado","PU5C",Replacer.ReplaceText,{"Campaña 2"}),
+				    #"Columnas quitadas3" = Table.RemoveColumns(#"Valor reemplazado",{"Campaña"}),
+				    #"Columnas con nombre cambiado1" = Table.RenameColumns(#"Columnas quitadas3",{{"Campaña 2", "Campaña"}}),
+				    #"Valor reemplazado1" = Table.ReplaceValue(#"Columnas con nombre cambiado1","PU5C_Porc_Prod_Promedio","PU5C",Replacer.ReplaceText,{"Campaña"}),
+				    #"Tipo cambiado2" = Table.TransformColumnTypes(#"Valor reemplazado1",{{"Total_Comprado_Porc_Prod", type number}})
+				in
+				    #"Tipo cambiado2"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,36 @@
+table Medidas_ProdyExpo
+	lineageTag: ae06a3b2-845d-4870-a8a5-2819bdba280b
+
+	measure 'Producción y Exportación' = ```
+			
+			FORMAT([Producción Est 23/24(Mtn)], "0.00") 
+			& "   |   " & 
+			FORMAT([Exportación Est 23/24(Mtn)], "0.00")
+			
+			```
+		lineageTag: 5bc44c27-41de-40ae-b5ee-831c313026f7
+
+	measure 'Producción (Mtn)' = ```
+			
+			CALCULATE(
+			    SUM(Balances_Cultivos[Valor]) / 1000000,
+			    Balances_Cultivos[att] = "prd"
+			)
+			
+			```
+		lineageTag: c69cd364-f8ef-4e18-9d99-79de12699e74
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Medidas_ProdyExpo = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_ResultType = Table
+

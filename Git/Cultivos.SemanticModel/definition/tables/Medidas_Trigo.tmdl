@@ -1,0 +1,206 @@
+table Medidas_Trigo
+	lineageTag: 10b77d32-bd46-43ac-a8ea-0777e5ea6603
+
+	measure 'Producción Est 24/25(Mtn)' = ```
+			
+			VAR CampanaFiltrada =
+			    CALCULATE(
+			        MAX('Campaña'[Campaña]),
+			        'Campaña'[id_campaña] = 15
+			    )
+			
+			VAR ValorCalculado =
+			    CALCULATE(
+			        SUM(Balances_Cultivos[Valor]),
+			        Balances_Cultivos[att] = "prd",
+			        Balances_Cultivos[Campaña] = CampanaFiltrada
+			    )
+			
+			RETURN
+			DIVIDE(ValorCalculado, 1000000)
+			
+			```
+		lineageTag: c0f272a9-6df7-4b70-80ee-0f9e39ff3667
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Exportación Est 24/25(Mtn)' =
+			
+			VAR CampanaFiltrada =
+			    CALCULATE(
+			        MAX('Campaña'[Campaña]),
+			        'Campaña'[id_campaña] = 15
+			    )
+			
+			VAR ValorCalculado =
+			    CALCULATE(
+			        SUM(Balances_Cultivos[Valor]),
+			        Balances_Cultivos[att] = "exp",
+			        Balances_Cultivos[Campaña] = CampanaFiltrada
+			    )
+			
+			RETURN
+			DIVIDE(ValorCalculado, 1000000)
+		lineageTag: a72bb478-782d-412a-9495-6558e79ef925
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure vs2023/24 = ```
+			
+			VAR UltimoMesCampana14 =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        FILTER(
+			            'Balances',
+			            'Balances'[Campaña] = "2024/25" &&
+			            'Balances'[Meses] <> "Total" &&
+			            NOT(ISBLANK('Balances'[Valor]))
+			        )
+			    )
+			
+			VAR AcumuladoCampana14 =
+			    CALCULATE(
+			        SUM('Balances'[Valor]) / 1000000,
+			        'Balances'[Campaña] = "2024/25",
+			        'Balances'[Meses] <> "Total",
+			        'Balances'[Orden Comercial] <= UltimoMesCampana14
+			    )
+			
+			VAR AcumuladoCampana13 =
+			    CALCULATE(
+			        SUM('Balances'[Valor]) / 1000000,
+			        'Balances'[Campaña] = "2023/24",
+			        'Balances'[Meses] <> "Total",
+			        'Balances'[Orden Comercial] <= UltimoMesCampana14
+			    )
+			
+			VAR Diferencia_Porcentaje = 
+			    DIVIDE(
+			        AcumuladoCampana14 - AcumuladoCampana13,
+			        AcumuladoCampana13,
+			        0
+			    )
+			
+			RETURN
+			Diferencia_Porcentaje
+			```
+		lineageTag: 6e3f0899-cbd5-460a-b65d-2da26b24d102
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure vsPU5C = ```
+			
+			VAR UltimoOrdenCampana14 =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        FILTER(
+			            'Balances',
+			            'Balances'[Campaña] = "2024/25" &&
+			            NOT(ISBLANK('Balances'[Valor]))
+			        )
+			    )
+			
+			VAR AcumuladoCampana14 =
+			    CALCULATE(
+			        SUM('Balances'[Valor]),
+			        'Balances'[Campaña] = "2024/25",
+			        'Balances'[Orden Comercial] <= UltimoOrdenCampana14
+			    )
+			
+			VAR AcumuladoCampana16 =
+			    CALCULATE(
+			        SUM('Balances'[Valor]),
+			        'Balances'[Campaña] = "PU5C",
+			        'Balances'[Orden Comercial] <= UltimoOrdenCampana14
+			    )
+			
+			VAR Diferencia_Porcentaje = 
+			    DIVIDE(
+			        AcumuladoCampana14 - AcumuladoCampana16,
+			        AcumuladoCampana16,
+			        0
+			    )
+			
+			RETURN
+			Diferencia_Porcentaje
+			```
+		lineageTag: 230eec81-3554-4c47-85b0-614af58f595b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'vsI.C   y   vsPU5C' = ```
+			
+			    FORMAT([vs2023/24],"0%")
+			    &  
+			    "   |   "  
+			    &
+			    FORMAT([vsPU5C], "0%")
+			```
+		lineageTag: 186424b1-a9f8-454f-9c20-b83ff3978f1f
+
+	measure 'Molienda Acumulada Trigo (Mtn)' =
+			
+			VAR OrdenLimite =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        FILTER(
+			            ALL('Balances'),
+			            RELATED('Campaña'[id_campaña]) = 15 &&
+			            'Balances'[Producto] = "Trigo Sin Candeal" &&
+			            'Balances'[Atributo] = "Molienda" &&
+			            'Balances'[Fuente] = "Min Agro" &&
+			            'Balances'[Referencia] = "total" &&
+			            NOT ISBLANK('Balances'[Valor]) &&
+			            NOT ISBLANK('Balances'[Orden Comercial])
+			        )
+			    )
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]) / 1000000,
+			    FILTER(
+			        ALL('Balances'),
+			        RELATED('Campaña'[id_campaña]) = 15 &&
+			        'Balances'[Producto] = "Trigo Sin Candeal" &&
+			        'Balances'[Atributo] = "Molienda" &&
+			        'Balances'[Fuente] = "Min Agro" &&
+			        'Balances'[Referencia] = "total" &&
+			        NOT ISBLANK('Balances'[Valor]) &&
+			        NOT ISBLANK('Balances'[Orden Comercial]) &&
+			        'Balances'[Orden Comercial] <= OrdenLimite
+			    )
+			)
+		lineageTag: fedc91ee-1654-4dfa-9dc1-4710f4afaafd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Exportación Acumulada (Mtn)' =
+			
+			VAR OrdenActual = MAX('Balances'[Orden Comercial])
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]) / 1000000,
+			    'Balances'[Campaña] = "2024/25",
+			    'Balances'[Atributo] = "Exportaciones",
+			    'Balances'[Fuente] = "Indec",
+			    'Balances'[Referencia] = "total",
+			    'Balances'[Meses] <> "Total",
+			    'Balances'[Orden Comercial] <= OrdenActual
+			)
+		lineageTag: 0f8ddf62-1e03-440c-ba5d-f043dfa50d16
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Medidas_Trigo = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_ResultType = Table
+

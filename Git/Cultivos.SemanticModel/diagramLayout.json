@@ -1,0 +1,307 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 1048.9999999999998,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 329,
+            "y": 523
+          },
+          "nodeIndex": "Balances",
+          "nodeLineageTag": "fda04dfa-c2e7-4233-bb23-ed2ebf4e365e",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 14
+          },
+          "nodeIndex": "Calendario",
+          "nodeLineageTag": "7f6c181e-dfe5-4455-87b1-b885bc8b927f",
+          "size": {
+            "height": 382,
+            "width": 218
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 342.14285714285711,
+            "y": 242.14285714285717
+          },
+          "nodeIndex": "Campaña",
+          "nodeLineageTag": "3991fb1e-025d-45fe-8f17-8c826fd27cda",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 270,
+            "y": 0
+          },
+          "nodeIndex": "Campaña_Meses",
+          "nodeLineageTag": "2f9e4729-55f6-47fb-a98b-405788f7d060",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 564.57142857142856,
+            "y": 12.5
+          },
+          "nodeIndex": "Fuente",
+          "nodeLineageTag": "c6e1b5cf-f124-48ca-a3ad-eb0ec82746b7",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 812,
+            "y": 15
+          },
+          "nodeIndex": "Producto",
+          "nodeLineageTag": "6babf4ed-9f9e-46ac-960e-fcf6d4f4e23b",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 1073,
+            "y": 10.5
+          },
+          "nodeIndex": "Referencia",
+          "nodeLineageTag": "9a2bc7fe-c850-481a-99ae-ca08309e14b3",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 1823,
+            "y": 61.25
+          },
+          "nodeIndex": "Medidas_Molienda",
+          "nodeLineageTag": "71fe0878-896c-4ab3-92f3-cde81e8ec680",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 18
+        },
+        {
+          "location": {
+            "x": 1814,
+            "y": 185
+          },
+          "nodeIndex": "Medidas_Exportaciones",
+          "nodeLineageTag": "548eec7d-bc37-4032-b8e2-4a4c818f545c",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 1809.5,
+            "y": 435
+          },
+          "nodeIndex": "Medidas_Comercialización",
+          "nodeLineageTag": "7335c8ac-89ed-4acf-8cd3-f0487fa8f02d",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 592,
+            "y": 522
+          },
+          "nodeIndex": "Total Comprado",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 20
+        },
+        {
+          "location": {
+            "x": 846,
+            "y": 511
+          },
+          "nodeIndex": "Compras/Produccion",
+          "nodeLineageTag": "0a02a7b5-33b2-408b-b7dd-d12d2f09ba9f",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1104.5,
+            "y": 513.5
+          },
+          "nodeIndex": "Balances_Cultivos",
+          "nodeLineageTag": "4cc52103-3dc5-4784-aca3-c9c52a2af2eb",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 1814.5,
+            "y": 334.25
+          },
+          "nodeIndex": "Medidas_ProdyExpo",
+          "nodeLineageTag": "ae06a3b2-845d-4870-a8a5-2819bdba280b",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 16,
+          "expandedHeight": 306
+        },
+        {
+          "location": {
+            "x": 1816.75,
+            "y": 579.25
+          },
+          "nodeIndex": "Medidas_Maíz",
+          "nodeLineageTag": "3847973f-7033-4317-8037-e8315d92b04a",
+          "size": {
+            "height": 233,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 357.75,
+            "y": 842.5
+          },
+          "nodeIndex": "Existencias",
+          "nodeLineageTag": "c833b70d-d7d8-4998-8c0e-5cc871af40f1",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 17
+        },
+        {
+          "location": {
+            "x": 1394.1428571428573,
+            "y": 520.67857142857133
+          },
+          "nodeIndex": "Existencias_Maiz_Historico",
+          "nodeLineageTag": "71baaa71-3ea6-4cb2-b17f-62909f6cc8bc",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 842.71428571428578,
+            "y": 839.25
+          },
+          "nodeIndex": "Tabla_Stock_Cultivos",
+          "nodeLineageTag": "0d019d1e-7852-406c-8ed1-17ed3f81e61d",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 2107,
+            "y": 467.625
+          },
+          "nodeIndex": "Medidas_Soja",
+          "nodeLineageTag": "8121a5bc-d65c-4354-b7fa-7cfea47af0d3",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1136.714285714286,
+            "y": 849.625
+          },
+          "nodeIndex": "Existencias_Soja_Historico",
+          "nodeLineageTag": "3328cf4f-8a8a-4039-a63c-a0e5cc10a7cc",
+          "size": {
+            "height": 197.14285714285711,
+            "width": 234
+          },
+          "zIndex": 19
+        },
+        {
+          "location": {
+            "x": 2391,
+            "y": 471.38392857142856
+          },
+          "nodeIndex": "Medidas_Trigo",
+          "nodeLineageTag": "10b77d32-bd46-43ac-a8ea-0777e5ea6603",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2675,
+            "y": 423.38392857142856
+          },
+          "nodeIndex": "Existencias_Trigo_Historico",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas las tablas",
+      "zoomValue": 70,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas las tablas",
+  "defaultDiagram": "Todas las tablas"
+}

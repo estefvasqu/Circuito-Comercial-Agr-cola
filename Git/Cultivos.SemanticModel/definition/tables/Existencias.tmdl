@@ -1,0 +1,91 @@
+table Existencias
+	lineageTag: c833b70d-d7d8-4998-8c0e-5cc871af40f1
+
+	column Fecha
+		dataType: dateTime
+		formatString: yyyy-mm
+		lineageTag: ad6b637d-a663-4559-9708-ded719ef7816
+		summarizeBy: none
+		sourceColumn: Fecha
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column Producto
+		dataType: string
+		lineageTag: 5d5aa513-87b2-4da7-9d87-b9037ec401ca
+		summarizeBy: none
+		sourceColumn: Producto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor
+		dataType: double
+		lineageTag: e571038c-5b9c-4556-be5c-f056d9ef2155
+		summarizeBy: sum
+		sourceColumn: Valor
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Mtn
+		dataType: double
+		lineageTag: e14be8f4-0e58-4170-958d-d72733e12612
+		summarizeBy: sum
+		sourceColumn: Mtn
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Año
+		dataType: int64
+		formatString: 0
+		lineageTag: 7d3041e4-7a78-42d8-86cb-34c2b0d449a6
+		summarizeBy: sum
+		sourceColumn: Año
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		dataType: int64
+		formatString: 0
+		lineageTag: bd4f98fa-3504-4702-a4b4-56c9cf5edda4
+		summarizeBy: sum
+		sourceColumn: Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Existencias = m
+		mode: import
+		queryGroup: Tablas
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\evasquez\OneDrive - Bolsa de Cereales de Buenos Aires\Documentos - Instituto Estudios Económicos\Balances\Base BCEs.xlsm"), null, true),
+				    Existencias_Sheet = Origen{[Item="Existencias",Kind="Sheet"]}[Data],
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Existencias_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"En  toneladas", type date}, {"Maiz", type number}, {"Soja", type number}, {"Trigo Pan", type number}, {"Trigo Candeal", Int64.Type}, {"Trigo Total", type number}, {"Girasol", Int64.Type}, {"Cebada Cerv", Int64.Type}, {"Ceb Forrajera", Int64.Type}, {"Ceb apta para Malteria", Int64.Type}, {"CEBADA TOTAL", Int64.Type}, {"Sorgo Granifero", Int64.Type}, {"Column13", type any}, {"¿De donde viene el dato?", type date}, {"Column15", type any}, {"Column16", type any}, {"Column17", type any}, {"Column18", type any}, {"Column19", type any}, {"Column20", type any}, {"Column21", type any}, {"Column22", type any}, {"Column23", type any}, {"Column24", type any}, {"Column25", type any}, {"Column26", type any}, {"Column27", type any}, {"Column28", type any}, {"Column29", type any}, {"Column30", type any}, {"Column31", type any}, {"Column32", type any}, {"Column33", type any}, {"Column34", type any}, {"Column35", type any}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Column13", "¿De donde viene el dato?", "Column15", "Column16", "Column17", "Column18", "Column19", "Column20", "Column21", "Column22", "Column23", "Column24", "Column25", "Column26", "Column27", "Column28", "Column29", "Column30", "Column31", "Column32", "Column33", "Column34", "Column35"}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columnas quitadas",{{"Maiz", "Maíz"}}),
+				    #"Columna de anulación de dinamización" = Table.UnpivotOtherColumns(#"Columnas con nombre cambiado", {"En  toneladas"}, "Atributo", "Valor"),
+				    #"Columnas con nombre cambiado1" = Table.RenameColumns(#"Columna de anulación de dinamización",{{"Atributo", "Producto"}}),
+				    #"Personalizada agregada" = Table.AddColumn(#"Columnas con nombre cambiado1", "Mtn", each [Valor]/1000000),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Personalizada agregada",{{"Mtn", type number}}),
+				    #"Columnas con nombre cambiado2" = Table.RenameColumns(#"Tipo cambiado1",{{"En  toneladas", "Fecha"}}),
+				    #"Columna duplicada" = Table.DuplicateColumn(#"Columnas con nombre cambiado2", "Fecha", "Fecha - Copia"),
+				    #"Año extraído" = Table.TransformColumns(#"Columna duplicada",{{"Fecha - Copia", Date.Year, Int64.Type}}),
+				    #"Columnas con nombre cambiado3" = Table.RenameColumns(#"Año extraído",{{"Fecha - Copia", "Año"}}),
+				    #"Columna duplicada1" = Table.DuplicateColumn(#"Columnas con nombre cambiado3", "Fecha", "Fecha - Copia"),
+				    #"Mes extraído" = Table.TransformColumns(#"Columna duplicada1",{{"Fecha - Copia", Date.Month, Int64.Type}}),
+				    #"Columnas con nombre cambiado4" = Table.RenameColumns(#"Mes extraído",{{"Fecha - Copia", "Mes"}})
+				in
+				    #"Columnas con nombre cambiado4"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

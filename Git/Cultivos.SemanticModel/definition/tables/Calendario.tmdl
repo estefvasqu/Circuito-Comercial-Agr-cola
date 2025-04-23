@@ -1,0 +1,90 @@
+table Calendario
+	lineageTag: 7f6c181e-dfe5-4455-87b1-b885bc8b927f
+
+	column Date
+		formatString: General Date
+		lineageTag: f8c854da-adea-4b7d-8a74-c75018b4db4d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		variation Variación
+			isDefault
+			relationship: d067c0c3-f921-4a87-96b3-b35eac9671d9
+			defaultHierarchy: LocalDateTable_a7baf466-7bcc-4ebd-83bb-1e93a9a9a455.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año
+		formatString: 0
+		lineageTag: e3b5bc70-bb53-4094-bdd6-c1d496ec85fb
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mes Número'
+		formatString: 0
+		lineageTag: db2c7b03-d9a5-46eb-8b5a-d340e875c5d0
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Mes Número]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nombre del Mes'
+		lineageTag: f7300ae4-6554-40b5-ab6e-01b54045a6c5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Nombre del Mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año-Mes
+		lineageTag: 83a4b282-9e99-4497-a0c1-774eba9ed4fa
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Año-Mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Mes y Año'
+		lineageTag: c245a26a-18b0-4223-8918-295518625410
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mes y Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Número de Semana'
+		formatString: 0
+		lineageTag: cce67bef-18d0-4e7e-86d9-b971abca42c7
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Número de Semana]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendario = calculated
+		mode: import
+		source = ```
+				
+				ADDCOLUMNS (
+				    CALENDAR (DATE(2000, 1, 1), DATE(2025, 12, 31)),
+				    "Año", YEAR([Date]),
+				    "Mes Número", MONTH([Date]),
+				    "Nombre del Mes", 
+				        UPPER(LEFT(FORMAT([Date], "MMMM"),1)) & LOWER(MID(FORMAT([Date], "MMMM"),2,LEN(FORMAT([Date], "MMMM"))-1)),
+				    "Año-Mes", FORMAT([Date], "YYYY-MM"),
+				    "Mes y Año", 
+				        UPPER(LEFT(FORMAT([Date], "MMMM"),1)) & 
+				        LOWER(MID(FORMAT([Date], "MMMM"),2,LEN(FORMAT([Date], "MMMM"))-1)) & 
+				        " " & YEAR([Date]),
+				    "Número de Semana", WEEKNUM([Date], 2)
+				)
+				
+				```
+
+	annotation PBI_Id = 94dcf316193a4e4080da015bd3a03f10
+

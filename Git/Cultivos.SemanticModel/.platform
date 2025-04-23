@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Cultivos"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "fd90414e-23c8-4ba0-8bee-f7668f9eaf21"
+  }
+}

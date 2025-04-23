@@ -1,0 +1,137 @@
+table Medidas_Comercialización
+	lineageTag: 7335c8ac-89ed-4acf-8cd3-f0487fa8f02d
+
+	measure 'Ventas Acumuladas (Miles Tn)' =
+			
+			VAR CampanaSeleccionada =
+			    CALCULATETABLE(
+			        VALUES('Campaña'[Campaña]),
+			        'Campaña'[id_campaña] = 15
+			    )
+			
+			VAR MaxSemana =
+			    CALCULATE(
+			        MAX('Total Comprado'[Semana desde el inicio de la comercialización]),
+			        'Total Comprado'[Campaña] IN CampanaSeleccionada
+			    )
+			
+			RETURN
+			CALCULATE(
+			    SUM('Total Comprado'[Total_Comprado]),
+			    'Total Comprado'[Campaña] IN CampanaSeleccionada,
+			    'Total Comprado'[Semana desde el inicio de la comercialización] = MaxSemana
+			)
+		lineageTag: 731b5ace-a3fd-4d72-9608-513ed8f89544
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Variacion I.C' =
+			
+			VAR CampanaActual =
+			    CALCULATETABLE(
+			        VALUES('Campaña'[Campaña]),
+			        'Campaña'[id_campaña] = 15
+			    )
+			
+			VAR CampanaAnterior =
+			    CALCULATETABLE(
+			        VALUES('Campaña'[Campaña]),
+			        'Campaña'[id_campaña] = 14
+			    )
+			
+			VAR SemanaMaxima =
+			    CALCULATE(
+			        MAX('Total Comprado'[Semana desde el inicio de la comercialización]),
+			        'Total Comprado'[Campaña] IN CampanaActual
+			    )
+			
+			VAR ValorActual =
+			    CALCULATE(
+			        SUM('Total Comprado'[Total_Comprado]),
+			        'Total Comprado'[Campaña] IN CampanaActual,
+			        'Total Comprado'[Semana desde el inicio de la comercialización] = SemanaMaxima
+			    )
+			
+			VAR ValorAnterior =
+			    CALCULATE(
+			        SUM('Total Comprado'[Total_Comprado]),
+			        'Total Comprado'[Campaña] IN CampanaAnterior,
+			        'Total Comprado'[Semana desde el inicio de la comercialización] = SemanaMaxima
+			    )
+			
+			RETURN
+			IF(
+			    NOT ISBLANK(ValorAnterior),
+			    DIVIDE(ValorActual - ValorAnterior, ValorAnterior),
+			    BLANK()
+			)
+		formatString: 0%;-0%;0%
+		lineageTag: 05f827e0-3a14-4386-a40d-c93fc41860c1
+
+	measure 'Variación PU5C.' =
+			
+			VAR CampanaActual =
+			    CALCULATETABLE(
+			        VALUES('Campaña'[Campaña]),
+			        'Campaña'[id_campaña] = 15
+			    )
+			
+			VAR CampanaComparada =
+			    CALCULATETABLE(
+			        VALUES('Campaña'[Campaña]),
+			        'Campaña'[id_campaña] = 16
+			    )
+			
+			VAR SemanaMaxima =
+			    CALCULATE(
+			        MAX('Total Comprado'[Semana desde el inicio de la comercialización]),
+			        'Total Comprado'[Campaña] IN CampanaActual
+			    )
+			
+			VAR ValorActual =
+			    CALCULATE(
+			        SUM('Total Comprado'[Total_Comprado]),
+			        'Total Comprado'[Campaña] IN CampanaActual,
+			        'Total Comprado'[Semana desde el inicio de la comercialización] = SemanaMaxima
+			    )
+			
+			VAR ValorComparado =
+			    CALCULATE(
+			        SUM('Total Comprado'[Total_Comprado]),
+			        'Total Comprado'[Campaña] IN CampanaComparada,
+			        'Total Comprado'[Semana desde el inicio de la comercialización] = SemanaMaxima
+			    )
+			
+			RETURN
+			IF(
+			    NOT ISBLANK(ValorComparado),
+			    DIVIDE(ValorActual - ValorComparado, ValorComparado),
+			    BLANK()
+			)
+		formatString: 0%;-0%;0%
+		lineageTag: 5983d5c7-c83b-4718-873c-09f91bb479ab
+
+	measure 'Variacion I.C y Variación PU5C.' = ```
+			
+			    FORMAT([Variacion I.C],"0%")
+			    &  
+			    "   |   "  
+			    &
+			    FORMAT([Variación PU5C.], "0%")
+			```
+		lineageTag: 7c1dec05-4255-49e4-8422-67bbf84ef4c1
+
+	partition Medidas_Comercialización = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+

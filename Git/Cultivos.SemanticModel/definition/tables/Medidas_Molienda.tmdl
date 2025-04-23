@@ -1,0 +1,186 @@
+table Medidas_Molienda
+	lineageTag: 71fe0878-896c-4ab3-92f3-cde81e8ec680
+
+	measure 'Molienda Acumulada 23/24(Mtn)' = ```
+			
+			IF(
+			    SELECTEDVALUE('Producto'[id_producto]) IN {30,26},
+			    CALCULATE( 
+			        SUM('Balances'[Valor]) / 1000000,
+			        'Campaña'[id_campaña] = 15
+			    ),
+			    CALCULATE( 
+			        SUM('Balances'[Valor]) / 1000000,
+			        'Campaña'[id_campaña] = 14
+			    )
+			)
+			```
+		lineageTag: e5392c9a-ecd8-44ec-b401-83610b4e3f6d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Variación I.C' = ```
+			
+			VAR UltimoMesCampana14 =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        FILTER(
+			            'Balances',
+			            'Balances'[Campaña] = "2023/24" &&
+			            'Balances'[Meses] <> "Total" &&
+			            NOT(ISBLANK('Balances'[Valor]))
+			        )
+			    )
+			
+			VAR AcumuladoCampana14 =
+			    CALCULATE(
+			        SUM('Balances'[Valor]) / 1000000,
+			        'Balances'[Campaña] = "2023/24",
+			        'Balances'[Meses] <> "Total",
+			        'Balances'[Orden Comercial] <= UltimoMesCampana14
+			    )
+			
+			VAR AcumuladoCampana13 =
+			    CALCULATE(
+			        SUM('Balances'[Valor]) / 1000000,
+			        'Balances'[Campaña] = "2022/23",
+			        'Balances'[Meses] <> "Total",
+			        'Balances'[Orden Comercial] <= UltimoMesCampana14
+			    )
+			
+			VAR Diferencia_Porcentaje = 
+			    DIVIDE(
+			        AcumuladoCampana14 - AcumuladoCampana13,
+			        AcumuladoCampana13,
+			        0
+			    )
+			
+			RETURN
+			Diferencia_Porcentaje
+			
+			```
+		lineageTag: 24327af9-f9e4-4262-8879-f98dc895b178
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Promedio_Mensual_Ultimas_5_Campanas = ```
+			
+			VAR ValoresMensuales =
+			    SUMMARIZE(
+			        'Balances',
+			        'Campaña'[id_campaña],
+			        'Balances'[Meses],
+			        "SumaMensual", SUM('Balances'[Valor])
+			    )
+			
+			VAR ValoresFiltrados =
+			    FILTER(
+			        ValoresMensuales,
+			        'Campaña'[id_campaña] >= 8 && 'Campaña'[id_campaña] <= 13
+			    )
+			
+			RETURN
+			    AVERAGEX(ValoresFiltrados, [SumaMensual])
+			
+			```
+		lineageTag: 4d961b03-5467-4988-aab0-73c5da9c0e81
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Color barra título' = ```
+			
+			VAR _medida = [Variación I.C]
+			VAR _color =
+			SWITCH(
+			    True,
+			    _medida = 0,  "grey" ,
+			    _medida > 0,  "#D0F0C0A6",
+			    _medida < 0,  "#ffcbd1A6"
+			)
+			RETURN
+			_color
+			
+			```
+		formatString: 0
+		lineageTag: 2a19ee9e-92fe-419c-ab88-61192dc35052
+
+	measure 'Color positivo y negativo' = ```
+			
+			VAR _medida = [Variación I.C]
+			VAR _color =
+			SWITCH(
+			    True,
+			    _medida = 0,  "grey" ,
+			    _medida > 0,  "green",
+			    _medida < 0,  "red"
+			)
+			RETURN
+			_color
+			
+			```
+		lineageTag: e20c9b38-ca98-407a-bd9e-cebea0dbbf3e
+
+	measure 'Variación PU5C' = ```
+			
+			VAR UltimoOrdenCampana14 =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        FILTER(
+			            'Balances',
+			            'Balances'[Campaña] = "2023/24" &&
+			            NOT(ISBLANK('Balances'[Valor]))
+			        )
+			    )
+			
+			VAR AcumuladoCampana14 =
+			    CALCULATE(
+			        SUM('Balances'[Valor]),
+			        'Balances'[Campaña] = "2023/24",
+			        'Balances'[Orden Comercial] <= UltimoOrdenCampana14
+			    )
+			
+			VAR AcumuladoCampana16 =
+			    CALCULATE(
+			        SUM('Balances'[Valor]),
+			        'Balances'[Campaña] = "PU5C",
+			        'Balances'[Orden Comercial] <= UltimoOrdenCampana14
+			    )
+			
+			VAR Diferencia_Porcentaje = 
+			    DIVIDE(
+			        AcumuladoCampana14 - AcumuladoCampana16,
+			        AcumuladoCampana16,
+			        0
+			    )
+			
+			RETURN
+			Diferencia_Porcentaje
+			```
+		lineageTag: 6f26d48f-bf42-493b-be30-f1c7ee0671ed
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Variación I.C y Variación PU5C' = ```
+			
+			    FORMAT([Variación I.C],"0%")
+			    &  
+			    "   |   "  
+			    &
+			    FORMAT([Variación PU5C], "0%")
+			```
+		lineageTag: 5b8eeccb-ef0e-4ce7-a27a-7e0aa5a8fc45
+
+	partition Medidas_Molienda = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+

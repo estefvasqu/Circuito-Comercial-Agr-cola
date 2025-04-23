@@ -1,0 +1,36 @@
+table Campaña_Meses
+	lineageTag: 2f9e4729-55f6-47fb-a98b-405788f7d060
+
+	column id
+		dataType: string
+		lineageTag: 5de7e2bc-612e-45a3-bc16-9da0ee1c773e
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_meses_campaña
+		dataType: int64
+		formatString: 0
+		lineageTag: b58d31f3-7c43-460f-a658-6898e5b28f18
+		summarizeBy: none
+		sourceColumn: id_meses_campaña
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Campaña_Meses = m
+		mode: import
+		queryGroup: Dimensiones
+		source =
+				let
+				    Origen = Excel.Workbook(File.Contents("C:\Users\evasquez\OneDrive - Bolsa de Cereales de Buenos Aires\Documentos - Instituto Estudios Económicos\Dashboards\Monitor Economico\Outputs\Tablas_Dimensiones.xlsx"), null, true),
+				    Campaña_Meses_Sheet = Origen{[Item="Campaña_Meses",Kind="Sheet"]}[Data],
+				    #"Encabezados promovidos" = Table.PromoteHeaders(Campaña_Meses_Sheet, [PromoteAllScalars=true]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Encabezados promovidos",{{"id", type text}, {"id_meses_campaña", Int64.Type}})
+				in
+				    #"Tipo cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

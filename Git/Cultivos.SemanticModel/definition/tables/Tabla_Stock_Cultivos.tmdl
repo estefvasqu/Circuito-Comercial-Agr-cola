@@ -1,0 +1,88 @@
+table Tabla_Stock_Cultivos
+	lineageTag: 0d019d1e-7852-406c-8ed1-17ed3f81e61d
+
+	column Campaña
+		lineageTag: afdcc8af-4ca5-41b8-848d-f6d5008dc0e1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Campaña]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Producto
+		lineageTag: 3370e2f5-2e47-4510-86a2-1019a4312ca0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Producto]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Stock Final (Mtn)'
+		lineageTag: d0a29f52-22d6-4887-a2d7-766a26b9fdd1
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Stock Final (Mtn)]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column id_campaña
+		formatString: 0
+		lineageTag: 058dd0fe-5cd8-4d9a-a7ec-209dcfecdd38
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [id_campaña]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Stock Inicial (Mtn)'
+		lineageTag: c8b2d74b-7f5a-4641-b545-1efddd21bf1f
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Stock Inicial (Mtn)]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Tabla_Stock_Cultivos = calculated
+		mode: import
+		source = ```
+				
+				VAR TablaBase =
+				    SELECTCOLUMNS(
+				        FILTER(
+				            Balances_Cultivos,
+				            Balances_Cultivos[att] = "est"
+				        ),
+				        "Campaña", Balances_Cultivos[Campaña],
+				        "Producto", Balances_Cultivos[Producto],
+				        "Stock Final (Mtn)", DIVIDE(Balances_Cultivos[Valor], 1000000),
+				        "id_campaña", RELATED('Campaña'[id_campaña])
+				    )
+				RETURN
+				ADDCOLUMNS(
+				    TablaBase,
+				    "Stock Inicial (Mtn)",
+				        VAR CampanaAnterior = [id_campaña] - 1
+				        VAR ProductoActual = [Producto]
+				        RETURN
+				            CALCULATE(
+				                MAXX(
+				                    FILTER(
+				                        TablaBase,
+				                        [id_campaña] = CampanaAnterior &&
+				                        [Producto] = ProductoActual
+				                    ),
+				                    [Stock Final (Mtn)]
+				                )
+				            )
+				)
+				
+				
+				
+				```
+
+	annotation PBI_Id = bbd1ee033a26422e9792289505c3db2f
+

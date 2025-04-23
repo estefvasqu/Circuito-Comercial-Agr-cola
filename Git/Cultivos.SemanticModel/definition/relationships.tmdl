@@ -1,0 +1,114 @@
+relationship 6488f9c8-df1a-299d-4bb9-057c6117885b
+	fromColumn: Balances.id
+	toColumn: Campaña_Meses.id
+
+relationship 6b2f7afb-f200-8a91-0085-04c780c2218a
+	fromColumn: Balances.Campaña
+	toColumn: Campaña.Campaña
+
+relationship 8863a9cc-aaab-c37f-b07a-b30a172d0cbe
+	fromColumn: Balances.Producto
+	toColumn: Producto.'Producto '
+
+relationship 9cfd7d71-70c1-4442-3960-6d380ce1f38a
+	fromColumn: Balances.Referencia
+	toColumn: Referencia.Referencia
+
+relationship b8019a62-3a95-14ec-6e4c-7df910d0bea2
+	fromColumn: Balances.Fuente
+	toColumn: Fuente.Fuente
+
+relationship d067c0c3-f921-4a87-96b3-b35eac9671d9
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Calendario.Date
+	toColumn: LocalDateTable_a7baf466-7bcc-4ebd-83bb-1e93a9a9a455.Date
+
+relationship fa8d5980-ea16-eea1-15d2-e7660761ae6f
+	crossFilteringBehavior: bothDirections
+	toCardinality: many
+	fromColumn: Balances.Meses
+	toColumn: Calendario.'Nombre del Mes'
+
+relationship 0d8d4a79-1468-4bbd-b756-9621926fa8b3
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Total Comprado'.Fecha
+	toColumn: LocalDateTable_35c0f534-d6eb-4833-8679-d50c4049e455.Date
+
+relationship 4c04a7ad-b078-a3b6-06b6-e15201ac8ade
+	fromColumn: 'Total Comprado'.Campaña
+	toColumn: Campaña.Campaña
+
+relationship df479dd7-fa58-fc25-5804-43daff9a7792
+	fromColumn: 'Total Comprado'.Grano
+	toColumn: Producto.'Producto '
+
+relationship bac3b5da-4a02-4b36-b39a-4ea81c93229c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Compras/Produccion.Fecha
+	toColumn: LocalDateTable_d97ca808-2439-4071-9160-c5c1e9c2488e.Date
+
+relationship 30e2dafc-6096-3e0c-cbc4-ea5b1747440e
+	fromColumn: Compras/Produccion.Campaña
+	toColumn: Campaña.Campaña
+
+relationship d9faa587-fc7a-33f7-b240-3f8a56325a3f
+	fromColumn: Compras/Produccion.Grano
+	toColumn: Producto.'Producto '
+
+relationship AutoDetected_e7bb469e-eea0-4d60-b1d4-b5f6ea56056c
+	fromColumn: Balances_Cultivos.Producto
+	toColumn: Producto.'Producto '
+
+relationship 5005cd3c-66fb-ee4e-9ab8-8f37f2a94920
+	fromColumn: Balances_Cultivos.Campaña
+	toColumn: Campaña.Campaña
+
+relationship d0542bcd-be49-7e95-f724-c86d4f76efb3
+	fromColumn: Existencias.Fecha
+	toColumn: Calendario.Date
+
+relationship 2ef09180-335c-9c91-2463-b12e812468de
+	isActive: false
+	fromColumn: Existencias.Producto
+	toColumn: Producto.'Producto '
+
+relationship 8f763dd9-6b9c-b556-9375-32f0c4e0c9dd
+	isActive: false
+	fromColumn: Existencias.Mes
+	toColumn: Campaña_Meses.id_meses_campaña
+
+relationship 76e4231a-8bec-4322-a274-6a306df587a3
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Existencias_Maiz_Historico.Fecha
+	toColumn: LocalDateTable_d1e7caeb-81bd-4389-8858-d139c736f1bc.Date
+
+relationship 6ee5269a-7b6c-fece-5f45-51022ffc79b8
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Existencias_Maiz_Historico.id_campaña
+	toColumn: Campaña.id_campaña
+
+relationship 172c05b1-70f7-47db-ddd7-fbd2f0d5bd7f
+	fromColumn: Tabla_Stock_Cultivos.id_campaña
+	toColumn: Campaña.id_campaña
+
+relationship 4c5e04f4-7f13-9239-e92d-5938fe825291
+	fromColumn: Tabla_Stock_Cultivos.Producto
+	toColumn: Producto.'Producto '
+
+relationship 2d0301d9-307b-4283-bfab-58572481c8a0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Existencias_Soja_Historico.Fecha
+	toColumn: LocalDateTable_0ee42d79-ee49-4b1f-b8d2-e66afe88fbff.Date
+
+relationship 573d7254-76fd-f2b1-248c-26374b3cc85b
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: Existencias_Soja_Historico.id_campaña
+	toColumn: Campaña.id_campaña
+
+relationship 7fa7abe5-96be-4c8e-b1d2-e7f76e615f95
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Existencias_Trigo_Historico.Fecha
+	toColumn: LocalDateTable_72fab1cc-dea3-40f8-9bb4-e2f2a7ab1f61.Date
+

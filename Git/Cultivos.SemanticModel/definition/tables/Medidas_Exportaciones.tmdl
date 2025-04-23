@@ -1,0 +1,86 @@
+table Medidas_Exportaciones
+	lineageTag: 548eec7d-bc37-4032-b8e2-4a4c818f545c
+
+	measure 'Exportación Acumulada Vieja' = ```
+			
+			VAR OrdenActual = MAX('Balances'[Orden Comercial])
+			VAR CampanaActual = SELECTEDVALUE('Campaña'[id_campaña])
+			VAR ProductoActual = SELECTEDVALUE('Balances'[Producto])
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]),
+			    FILTER(
+			        ALLSELECTED('Balances'),
+			        RELATED('Campaña'[id_campaña]) = CampanaActual &&
+			        'Balances'[Producto] = ProductoActual &&
+			        'Balances'[Orden Comercial] <= OrdenActual
+			    )
+			)
+			
+			```
+		formatString: #,0
+		lineageTag: 38e865c6-a9f5-49dd-a48a-4cd1958aec68
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure 'Exportación Acumulada' = ```
+			
+			IF(
+			    SELECTEDVALUE('Producto'[id_producto]) IN {30},
+			    CALCULATE( 
+			        SUM('Balances'[Valor]) / 1000000,
+			        'Campaña'[id_campaña] = 15
+			    ),
+			    CALCULATE( 
+			        SUM('Balances'[Valor]) / 1000000,
+			        'Campaña'[id_campaña] = 14
+			    )
+			)
+			```
+		lineageTag: a48ea06f-c4ac-4e27-83ec-372f3076365c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Exportación Acumulada (Mtn) AJUSTADA' =
+			
+			VAR OrdenActual = MAX('Balances'[Orden Comercial])
+			VAR CampanaActual = SELECTEDVALUE('Campaña'[id_campaña])
+			VAR ProductoActual = SELECTEDVALUE('Balances'[Producto])
+			
+			VAR UltimoOrdenConDatos =
+			    CALCULATE(
+			        MAX('Balances'[Orden Comercial]),
+			        'Balances'[Valor] <> BLANK(),
+			        'Balances'[Producto] = ProductoActual,
+			        TREATAS({CampanaActual}, 'Campaña'[id_campaña])
+			    )
+			
+			RETURN
+			CALCULATE(
+			    SUM('Balances'[Valor]),
+			    FILTER(
+			        ALLSELECTED('Balances'),
+			        'Balances'[Producto] = ProductoActual &&
+			        'Balances'[Orden Comercial] <= OrdenActual &&
+			        'Balances'[Orden Comercial] <= UltimoOrdenConDatos
+			    ),
+			    TREATAS({CampanaActual}, 'Campaña'[id_campaña])
+			)
+		formatString: #,0
+		lineageTag: 047ca252-15bb-4a37-abc6-f3e64b6b5fab
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	partition Medidas_Exportaciones = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_ResultType = Table
+
